@@ -1,1 +1,54 @@
 http://www.w2bc.com/article/220724
+public class CurlDemo {
+	   public static void main(String[] args) {
+		   long i = System.currentTimeMillis();
+			boolean b = downCurl(
+					"https://www.baidu.com/img/bd_logo1.png",
+					"/home/chen/1.png");
+			System.out.println("下载是否成功：" + b + "\t使用时间" + (System.currentTimeMillis() - i) + "ms");
+	}
+	
+	public  static boolean downCurl(String url,String target){
+		String[] cmds = { //
+				"curl", //
+				"-o", //把下载的数据保存到指定的文件中,这里是target（小写o）
+				target, //
+				url, //需要下载的URI网址
+				"-s", //silent 模式，不输出任何东西（小写s）
+				"-w \n%{http_code}"//控制额外输出（小写w）
+		};
+		ProcessBuilder pb = new ProcessBuilder(cmds);
+		pb.redirectErrorStream(true);
+		Process p;
+		BufferedReader br=null;
+		try {
+			p=pb.start();
+			String line=null;
+			br=new BufferedReader(new InputStreamReader(p.getInputStream()));
+			while((line = br.readLine())!=null){
+				if(line.trim().contains("200")){
+					System.out.println("Download Img 200:\t" + cmds[2]);
+					return true;
+				}
+				if (line.trim().contains("404")) {
+					System.out.println("Download Img 404:\t" + cmds[2]);
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+		return false;
+	}
+}

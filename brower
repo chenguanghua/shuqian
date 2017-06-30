@@ -32,4 +32,5 @@ public class BrowerTest {
    public static void main(String[] args) {
 	   openURL("www.baidu.com");
 }
+
 }
